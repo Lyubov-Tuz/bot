@@ -1,0 +1,100 @@
+import telebot
+import os
+
+token = '***'
+bot = telebot.TeleBot(token)
+
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, 'Приветствую Вас в чат боте!')
+
+#сылка, как приветствие
+@bot.message_handler(commands = ['help'])
+def sait_welcome(message):
+    print(message)
+    text = 'Сайт https://dzen.ru/?clid=2242347&yredirect=true'
+    bot.reply_to(message, text)
+
+@bot.message_handler(content_types=['sticker'])
+def send_sticker(message):
+    FILE_ID = 'CAACAgIAAxkBAAOGY5QryLIGYZqWaKHJDkFPHOJJ3agAAgUCAAI1uLYPd1n0sAfhYwgrBA'
+    bot.send_sticker(message.chat.id, FILE_ID)
+    # print(message)
+    # bot.reply_to(message, '***')
+
+
+@bot.message_handler(content_types='text')
+def get_text_messages(message):
+     if message.text == "Привет":
+         bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
+     elif message.text == "/help":
+         bot.send_message(message.from_user.id, "Напиши привет")
+     else:
+         bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
+
+
+
+
+# Команда c параметром
+@bot.message_handler(commands=['say'])
+def say(message):
+    # получить то что после команды
+     text = ' '.join(message.text.split(' ')[1:])
+     bot.reply_to(message, f'***{text.upper()}!***')
+
+@bot.message_handler(content_types=['sticker'])
+def send_sticker(message):
+     FILE_ID = 'CAACAgIAAxkBAAIBNmOAGS4zp59WQp1rO4F4lJyXW41CAAK4AQACGELuCHJ8uFZVPXlFKwQ'
+     bot.send_sticker(message.chat.id, FILE_ID)
+     #print(message)
+     bot.reply_to(message, '***Хорошего дня!***')
+
+
+@bot.message_handler(commands=['admin'])
+def admin(message):
+     if message.from_user.username == 'lyubovtuz':
+         info = os.name
+         bot.reply_to(message, info)
+     else:
+         bot.reply_to(message, 'Метод недоступен, нет прав')
+
+
+
+@bot.message_handler(commands=['file'])
+def get_file(message):
+     print('запросили файл')
+     # Передать какой то файл который есть на диске
+     # with open('text.txt', 'r', encoding='utf-8') as data:
+     #     bot.send_document(message.chat.id, data)
+     with open('klub.jpg', 'rb') as data:
+         bot.send_photo(message.chat.id, data)
+
+@bot.message_handler(commands=['kurs'])
+def get_kurs(message):
+     print('запросили файл')
+     with open('kurs.jpg', 'rb') as data:
+         bot.send_photo(message.chat.id, data)
+     with open('python.jpg', 'rb') as data:
+         bot.send_photo(message.chat.id, data)
+     with open('Tilda.jpg', 'rb') as data:
+         bot.send_photo(message.chat.id, data)
+     with open('web.jpg', 'rb') as data:
+         bot.send_photo(message.chat.id, data)
+
+@bot.message_handler(content_types=['text'])
+def words_text(message):
+     if 'курс' in message.text.lower():
+         #TODO заполнить информацию о курсах
+         bot.reply_to(message, 'Информация о курсах: бла бла бла')
+         return
+     if 'плохое слово' in message.text.lower():
+         bot.reply_to(message, 'Не ругайся.')
+         return
+     if 'счастливый' in message.text.lower():
+         bot.reply_to(message, 'В тексте слово счастливый')
+         return
+     text = message.text[::-1]
+     bot.reply_to(message, text)
+     
+     
+bot.polling()
